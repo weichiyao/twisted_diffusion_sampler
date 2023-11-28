@@ -355,7 +355,7 @@ def load_classifier(resnet_model_path, device):
     
     # for mnist 
     resnet_model_info = th.load(resnet_model_path, map_location='cpu')
-    if isinstance(resnet_model_info, dict):
+    if ('arch' in resnet_model_info) and ('state_dict' in resnet_model_info):
         resnet_model = get_model(arch=resnet_model_info["arch"], num_classes=10)
 
         resnet_model = nn.DataParallel(resnet_model)
