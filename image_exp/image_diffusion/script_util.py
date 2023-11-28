@@ -9,8 +9,8 @@ import torch as th
 from torch import nn 
 
 
-NUM_CLASSES = 1000
-
+NUM_CLASSES=10
+ARCH='resnet50'
 
 def sampler_defaults():
     return dict(
@@ -352,13 +352,20 @@ def select_args(args_dict, keys):
 
 
 def load_classifier(resnet_model_path, device):
-
+    
     # for mnist 
     resnet_model_info = th.load(resnet_model_path, map_location='cpu')
-    resnet_model = get_model(arch=resnet_model_info["arch"], num_classes=10)
+    if isinstance(resnet_model_info, dict):
+        resnet_model = get_model(arch=resnet_model_info["arch"], num_classes=10)
 
-    resnet_model = nn.DataParallel(resnet_model)
-    resnet_model.load_state_dict(resnet_model_info["state_dict"])
+        resnet_model = nn.DataParallel(resnet_model)
+        resnet_model.load_state_dict(resnet_model_info["state_dict"])
+    else:
+        resnet_model = get_model(arch=ARCH, num_classes=10)
+
+        resnet_model = nn.DataParallel(resnet_model)
+        resnet_model.load_state_dict(resnet_model_info)
+
     resnet_model.to(device) 
     resnet_model.eval()
 
