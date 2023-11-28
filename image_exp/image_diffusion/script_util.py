@@ -364,7 +364,13 @@ def load_classifier(resnet_model_path, device):
         resnet_model = get_model(arch=ARCH, num_classes=10)
 
         resnet_model = nn.DataParallel(resnet_model)
-        resnet_model.load_state_dict(resnet_model_info)
+        
+        state_dict = {}
+        for key in resnet_model_info:
+            new_key = "module." + key  # Prepend 'module.' to each key
+            state_dict[new_key] = resnet_model_info[key]
+
+        resnet_model.load_state_dict(state_dict)
 
     resnet_model.to(device) 
     resnet_model.eval()
